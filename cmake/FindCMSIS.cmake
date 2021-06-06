@@ -116,14 +116,26 @@ foreach(COMP ${CMSIS_FIND_COMPONENTS})
         
     find_file(CMSIS_${FAMILY}${CORE_U}_SOURCE
         NAMES system_stm32${FAMILY_L}xx.c
-        PATHS "${CMSIS_${FAMILY}${CORE_U}_PATH}/Source/Templates"
+        PATHS "${PROJECT_SOURCE_DIR}/Src"
         NO_DEFAULT_PATH
     )
-    list(APPEND CMSIS_SOURCES "${CMSIS_${FAMILY}${CORE_U}_SOURCE}")
-    
+
+    if (NOT CMSIS_${FAMILY}${CORE_U}_SOURCE)
+        #continue()
+        find_file(CMSIS_${FAMILY}${CORE_U}_SOURCE
+            NAMES system_stm32${FAMILY_L}xx.c
+            PATHS "${CMSIS_${FAMILY}${CORE_U}_PATH}/Source/Templates"
+            NO_DEFAULT_PATH
+        )
+    #endif()
+    else()
+        MESSAGE(STATUS "CMSIS system source found locally")
+
     if (NOT CMSIS_${FAMILY}${CORE_U}_SOURCE)
         continue()
     endif()
+
+    list(APPEND CMSIS_SOURCES "${CMSIS_${FAMILY}${CORE_U}_SOURCE}")
 
     if(NOT (TARGET CMSIS::STM32::${FAMILY}${CORE_C}))
         add_library(CMSIS::STM32::${FAMILY}${CORE_C} INTERFACE IMPORTED)
@@ -146,14 +158,24 @@ foreach(COMP ${CMSIS_FIND_COMPONENTS})
         
         find_file(CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP
             NAMES startup_stm32${TYPE_L}.s
-            PATHS "${CMSIS_${FAMILY}${CORE_U}_PATH}/Source/Templates/gcc"
+            PATHS "${PROJECT_SOURCE_DIR}/Src"
             NO_DEFAULT_PATH
         )
-        list(APPEND CMSIS_SOURCES "${CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP}")
+        
+        if(NOT CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP)
+            find_file(CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP
+                NAMES startup_stm32${TYPE_L}.s
+                PATHS "${CMSIS_${FAMILY}${CORE_U}_PATH}/Source/Templates/gcc"
+                NO_DEFAULT_PATH
+            )
+        endif()
+        
         if(NOT CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP)
             set(DEVICES_FOUND FALSE)
             break()
         endif()
+
+        list(APPEND CMSIS_SOURCES "${CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP}")
         
         if(NOT (TARGET CMSIS::STM32::${TYPE}${CORE_C}))
             add_library(CMSIS::STM32::${TYPE}${CORE_C} INTERFACE IMPORTED)
