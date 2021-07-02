@@ -116,11 +116,14 @@ foreach(COMP ${CMSIS_FIND_COMPONENTS})
         
     find_file(CMSIS_${FAMILY}${CORE_U}_SOURCE
         NAMES system_stm32${FAMILY_L}xx.c
-        PATHS "${PROJECT_SOURCE_DIR}/Src"
+        PATHS "${PROJECT_SOURCE_DIR}/Core/Src"
         NO_DEFAULT_PATH
     )
 
+    MESSAGE("CMSIS_${FAMILY}${CORE_U}_SOURCE - " ${CMSIS_${FAMILY}${CORE_U}_SOURCE})
+
     if (NOT CMSIS_${FAMILY}${CORE_U}_SOURCE)
+
         #continue()
         find_file(CMSIS_${FAMILY}${CORE_U}_SOURCE
             NAMES system_stm32${FAMILY_L}xx.c
@@ -130,6 +133,7 @@ foreach(COMP ${CMSIS_FIND_COMPONENTS})
     #endif()
     else()
         MESSAGE(STATUS "CMSIS system source found locally")
+    endif()
 
     if (NOT CMSIS_${FAMILY}${CORE_U}_SOURCE)
         continue()
@@ -158,7 +162,7 @@ foreach(COMP ${CMSIS_FIND_COMPONENTS})
         
         find_file(CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP
             NAMES startup_stm32${TYPE_L}.s
-            PATHS "${PROJECT_SOURCE_DIR}/Src"
+            PATHS "${PROJECT_SOURCE_DIR}/Core/Src"
             NO_DEFAULT_PATH
         )
         
@@ -170,6 +174,8 @@ foreach(COMP ${CMSIS_FIND_COMPONENTS})
             )
         endif()
         
+        MESSAGE("CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP - " ${CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP})
+
         if(NOT CMSIS_${FAMILY}${CORE_U}_${TYPE}_STARTUP)
             set(DEVICES_FOUND FALSE)
             break()
